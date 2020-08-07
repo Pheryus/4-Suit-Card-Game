@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28f6841f2df6a9b4eac8be5528357886, type: 3}
+  m_Name: Event1
+  m_EditorClassIdentifier: 
+  options:
+  - cards:
+    - rank: 1
+      suit: 0
+      card: {fileID: 0}
+      singleUse: 0
+    cost: 1
+  - cards:
+    - rank: 0
+      suit: 1
+      card: {fileID: 0}
+      singleUse: 0
+    - rank: 2
+      suit: 2
+      card: {fileID: 0}
+      singleUse: 0
+    - rank: 3
+      suit: 3
+      card: {fileID: 0}
+      singleUse: 0
+    cost: 2
+  - cards:
+    - rank: 6
+      suit: 2
+      card: {fileID: 0}
+      singleUse: 1
+    cost: 2
+  - cards:
+    - rank: 2
+      suit: 0
+      card: {fileID: 0}
+      singleUse: 0
+    cost: 2
+  level: 0
