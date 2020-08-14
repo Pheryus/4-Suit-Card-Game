@@ -3,24 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ForSale : MonoBehaviour {
+namespace Pheryus { 
+    public class ForSale : MonoBehaviour {
 
-    public int position;
+        public int position;
 
-    ShopManager shopManager;
+        ShopManager shopManager;
 
-    Button button;
+        public void SetSale(ShopManager shop, int id) {
+            position = id;
+            shopManager = shop;
+        }
 
-    public void SetSale(ShopManager shop, int id) {
-        position = id;
-        shopManager = shop;
-        button = gameObject.AddComponent<Button>();
-        button.onClick.AddListener(() => ClickToBuy());
+        private void Update() {
+            if (Input.GetMouseButtonDown(0)) {
+
+                RaycastHit hit;
+
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out hit) && hit.collider != null && hit.collider.transform == transform) {
+                    ClickToBuy();
+                }
+            }
+        }
+
+        public void ClickToBuy() {
+            Debug.Log("Click to Buy");
+            shopManager.TryToBuy(position);
+        }
 
     }
-
-    public void ClickToBuy() {
-        shopManager.TryToBuy(position);
-    }
-
 }

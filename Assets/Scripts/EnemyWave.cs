@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Wave", menuName = "New Enemy Wave")]
-public class EnemyWave : ScriptableObject {
+namespace Pheryus { 
+    [CreateAssetMenu(fileName = "Wave", menuName = "New Enemy Wave")]
+    public class EnemyWave : ScriptableObject {
 
-    public Option[] option;
-    public int difficult;
+        public Option[] option;
+        public int difficult;
 
-    public Option GetRandomOption() {
-        return option[Random.Range(0, option.Length - 1)];
+        public Option GetRandomOption() {
+            return option[Random.Range(0, option.Length - 1)];
+        }
     }
 }

@@ -62,6 +62,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\CardFramework\Scripts\Component\Card.cs" />
+    <Compile Include="Assets\CardFramework\Scripts\Component\CardDeck.cs" />
+    <Compile Include="Assets\CardFramework\Scripts\Component\CardSlot.cs" />
+    <Compile Include="Assets\CardFramework\Scripts\Component\Dealer.cs" />
+    <Compile Include="Assets\CardFramework\Scripts\Singleton\Singleton.cs" />
+    <Compile Include="Assets\CardFramework\Scripts\UI\DealerUI.cs" />
+    <Compile Include="Assets\CardFramework\Scripts\Utility\Timer.cs" />
+    <Compile Include="Assets\CardTexture.cs" />
     <Compile Include="Assets\DraggableCard.cs" />
     <Compile Include="Assets\DungeonManager.cs" />
     <Compile Include="Assets\PlayerStatus.cs" />
@@ -76,7 +84,6 @@
     <Compile Include="Assets\Scripts\PlayerAction.cs" />
     <Compile Include="Assets\Scripts\PlayerDeck.cs" />
     <Compile Include="Assets\ShopManager.cs" />
-    <Compile Include="Assets\Test.cs" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />

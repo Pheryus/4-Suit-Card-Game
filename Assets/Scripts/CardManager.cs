@@ -6,7 +6,7 @@ public class CardManager : MonoBehaviour {
 
     public static CardManager instance;
 
-    public Sprite[] heartCards, diamondCards, clubCards, spadeCards;
+    Sprite[] heartCards, diamondCards, clubCards, spadeCards;
 
     public Texture2D cardTexture;
 
@@ -17,7 +17,7 @@ public class CardManager : MonoBehaviour {
 
     private void Awake() {
         instance = this;
-
+        /*
         heartCards = new Sprite[12];
         diamondCards = new Sprite[12];
         clubCards = new Sprite[12];
@@ -38,6 +38,7 @@ public class CardManager : MonoBehaviour {
         for (int i = 0; i < 12; i++) {
             spadeCards[i] = sprites[i + 39];
         }
+        */
 
     }
 

@@ -2,48 +2,53 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerAction : MonoBehaviour {
+namespace Pheryus { 
+    public class PlayerAction : MonoBehaviour {
 
-    public bool canAct = true;
+        public bool canAct = true;
 
-    public static PlayerAction instance;
+        public static PlayerAction instance;
 
-    public DungeonManager dungeonManager;
+        public DungeonManager dungeonManager;
 
-    Suit suitPlayed = Suit.none;
+        Suit suitPlayed = Suit.none;
 
-    public PlayerDeck playerDeck;
+        public PlayerDeck playerDeck;
 
-    public GameObject commonDroppapleArea, lostArea;
+        public GameObject commonDroppapleArea, lostArea;
 
-    private void Awake() {
-        instance = this;
-    }
+        private void Awake() {
+            instance = this;
+        }
 
-    public void Act (Card cardPlayed) {
-        suitPlayed = cardPlayed.cardInfo.suit;
-    }
+        public void Act (Card cardPlayed) {
+            suitPlayed = cardPlayed.cardInfo.suit;
+        }
 
-    public void ShowCommonDroppableArea(bool active) {
-        commonDroppapleArea.SetActive(active);
-    }
+        public void ShowCommonDroppableArea(bool active) {
+            return;
+            commonDroppapleArea.SetActive(active);
+        }
 
-    public void ShowLostDroppableArea(bool active) {
-        lostArea.SetActive(active);
-    }
+        public void ShowLostDroppableArea(bool active) {
+            return;
+            lostArea.SetActive(active);
+        }
 
-    public void DisableDroppableAreas() {
-        ShowLostDroppableArea(false);
-        ShowCommonDroppableArea(false);
-    }
+        public void DisableDroppableAreas() {
+            return;
+            ShowLostDroppableArea(false);
+            ShowCommonDroppableArea(false);
+        }
 
-    public bool CanAct (Card card) {
-        return card.cardInfo.suit == suitPlayed || suitPlayed == Suit.none;
-    }
+        public bool CanAct (Card card) {
+            return card.cardInfo.suit == suitPlayed || suitPlayed == Suit.none;
+        }
 
-    public void EndTurn() {
-        suitPlayed = Suit.none;
-        dungeonManager.EndRound();
-        playerDeck.StartNewTurn();
+        public void EndTurn() {
+            suitPlayed = Suit.none;
+            dungeonManager.EndRound();
+            playerDeck.StartNewTurn();
+        }
     }
 }
