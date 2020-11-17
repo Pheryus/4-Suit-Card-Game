@@ -12,6 +12,8 @@ namespace Pheryus {
 
         public Card card;
 
+        public int shieldValue;
+
         public bool singleUse;
 
         public int power = 1;

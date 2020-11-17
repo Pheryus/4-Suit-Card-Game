@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Pheryus { 
     public class ShopManager : MonoBehaviour {
@@ -15,77 +16,137 @@ namespace Pheryus {
 
         public Option[] availableOptions;
 
+        public Dealer _dealer;
+
+        public GameObject shopUI, shopArea;
+
+        public TextMeshProUGUI[] optionInfo;
+
+        public GameObject[] cost;
+
+        public TextMeshProUGUI[] costText;
+
+        public GameObject passButton;
+
         public void StartShop() {
             activeEvent = shopEvent;
-            CreateShopCards();
+            CreateShopOptions();
+            _dealer.SetCardSlotActive(false);
+            shopUI.SetActive(true);
+            shopArea.SetActive(true);
+            passButton.SetActive(false);
         }
 
-        Option GetOption(int lvl) {
-            return shopEvent.GetRandomOption();
+        Option[] GetOptions() {
+            return shopEvent.GetRandomOptions(3);
         }
 
         public void TryToBuy(int position) {
             Option selectedOption = availableOptions[position];
             if (PlayerStatus.instance.gold >= selectedOption.cost) {
                 PlayerStatus.instance.gold -= selectedOption.cost;
-                foreach (Card c in battleboard.GetChild(position).GetComponentsInChildren<Card>()) {
-                    if (c.gameObject.transform.parent.name == "Cost") {
-                        Destroy(c.gameObject, 0.3f);
-                    }
-                    else {
-                        Destroy(c.GetComponent<Button>());
-                        Destroy(c.GetComponent<ForSale>());
+
+                if (availableOptions[position].IsOfType(OptionType.card)) {
+                    foreach (Card c in shopArea.transform.GetChild(position).GetComponentsInChildren<Card>()) {
                         PlayerDeck.instance.AddCardToDiscard(c.GetComponent<CardFramework.Card>());
                     }
                 }
+                else if (availableOptions[position].IsOfType(OptionType.diamond)){
+                    PlayerStatus.instance.gold += availableOptions[position].qty;
+                }
+                else if (availableOptions[position].IsOfType(OptionType.heart)) {
+                    PlayerStatus.instance.life += availableOptions[position].qty;
+                }
+
+                DeleteCards(position);
+                CloseShop();
 
             }
+        }
+
+        private void AddBoughtCard() {
+
         }
 
         public void CloseShop() {
-            foreach (Card c in battleboard.GetComponentsInChildren<Card>()) {
-                Destroy(c.gameObject);
+            _dealer.SetCardSlotActive(true);
+            shopUI.SetActive(false);
+            shopArea.SetActive(false);
+            passButton.SetActive(true);
+        }
+
+        public void DeleteCards(int selectedPosition) {
+            for (int i = 0; i < 3; i++) {
+                optionInfo[i].text = string.Empty;
+                if (i == selectedPosition) {
+                    continue;
+                }
+                for (int j = shopArea.transform.GetChild(i).childCount - 1; j >= 0; j--) {
+                    Destroy(shopArea.transform.GetChild(i).GetChild(j).gameObject);
+                }
             }
         }
 
+        private void CreateCards(int i) {
+            int qty = 0;
 
-        public void CreateShopCards() {
+            foreach (CardInfo cardInfo in availableOptions[i].wave.cards) {
+                GameObject newCardToBuy = Instantiate(CardManager.instance.cardPrefab, shopArea.transform.GetChild(i));
+
+                CardFramework.Card newCard = newCardToBuy.GetComponent<CardFramework.Card>();
+                Vector3 newCardPos = newCard.transform.position - new Vector3(0, -0.002f, 0.08f) * qty;
+                newCard.cardInfo = new CardInfo(cardInfo);
+                newCard.position = i;
+                newCard.FrontBecameVisible();
+                newCard.canUse = false;
+                newCard.cardInfo.card = newCard;
+                newCard.SetNewTarget(newCardPos, newCardToBuy.transform.rotation);
+                qty++;
+
+            }
+        }
+
+        private void SetOptionCost(int i) {
+            cost[i].SetActive(true);
+
+            if (availableOptions[i].cost > 0) {
+                costText[i].text = availableOptions[i].cost.ToString();
+            }
+            else {
+                costText[i].text = "FREE";
+            }
+        }
+
+        private void CreateResourceOption (int i, OptionType type) {
+            int qty = availableOptions[i].qty;
+            string text = "Gain " + qty.ToString();
+
+            if (type == OptionType.diamond) {
+                text += " diamonds";
+            }
+            else if (type == OptionType.heart) {
+                text += " extra lifes";
+            }
+            optionInfo[i].text = text;
+        }
+
+        public void CreateShopOptions() {
         
             availableOptions = new Option[3];
-
+            availableOptions = GetOptions();
             for (int i = 0; i < 3; i++) {
 
-                availableOptions[i] = GetOption(i);
+                SetOptionCost(i);
 
-                GameObject costGO = Instantiate(CardManager.instance.cardPrefab, costCardTransform[i]);
-                CardFramework.Card costGOCard = costGO.GetComponent<CardFramework.Card>();
-                costGOCard.cardInfo = new CardInfo((Rank)availableOptions[i].cost - 1, Suit.diamonds);
-                costGOCard.SetNewTarget(costGO.transform.position, costGO.transform.rotation);
-                costGOCard.FrontBecameVisible();
-                costGOCard.canUse = false;
-                ForSale forSaleCard = costGO.AddComponent<ForSale>();
-                forSaleCard.SetSale(this, i);
-
-                int qty = 0;
-            
-                foreach (CardInfo cardInfo in availableOptions[i].cards) {
-                    GameObject newCardToBuy = Instantiate(CardManager.instance.cardPrefab, battleboard.GetChild(i));
-                    
-                    CardFramework.Card newCard = newCardToBuy.GetComponent<CardFramework.Card>();
-                    Vector3 newCardPos = newCard.transform.position - new Vector3(0, -0.005f, 0.08f) * qty;
-                    newCard.cardInfo = new CardInfo(cardInfo);
-                    newCard.position = i;
-                    newCard.FrontBecameVisible();
-                    newCard.canUse = false;
-                    newCard.cardInfo.card = newCard;
-                    newCard.SetNewTarget(newCardPos, newCardToBuy.transform.rotation);
-                    newCardToBuy.AddComponent<ForSale>().SetSale(this, i);
-                    qty++;
-                
+                if (availableOptions[i].IsOfType(OptionType.card)) {
+                    CreateCards(i);
+                }
+                else if (availableOptions[i].IsOfType(OptionType.diamond) || availableOptions[i].IsOfType(OptionType.heart)) {
+                    CreateResourceOption(i, availableOptions[i].option);
                 }
 
             }
         
         }
-}
+    }
 }

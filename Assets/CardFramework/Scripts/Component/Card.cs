@@ -8,13 +8,17 @@ namespace CardFramework {
 
         public string SourceAssetBundlePath { get; set; }
 
+        public bool HasTarget;
+
         public Transform TargetTransform {
             get {
-                if (_targetTransform == null) {
+                if (_targetTransform == null && HasTarget) {
                     GameObject gameObject = new GameObject(this.name + "Target");
                     _targetTransform = gameObject.GetComponent<Transform>();
                     _targetTransform.position = transform.position;
                     _targetTransform.SetParent(transform.parent);
+                    _targetTransform.localRotation = Quaternion.identity;
+                    
                     _targetTransform.forward = transform.forward;
                 }
                 return _targetTransform;
@@ -28,19 +32,18 @@ namespace CardFramework {
 
         private float _positionDamp = .2f;
 
-        private float _rotationDamp = .2f;
-
         public bool returnToStartPosition = true;
 
+        Quaternion previousRotation;
+
         private void Update() {
-            if (returnToStartPosition) {
+            if (returnToStartPosition && HasTarget) {
                 SmoothToTargetPositionRotation();
             }
         }
 
-        public void SetDamp(float newPositionDamp, float newRotationDamp) {
+        public void SetDamp(float newPositionDamp) {
             _positionDamp = newPositionDamp;
-            _rotationDamp = newRotationDamp;
         }
 
         public bool OnTargetPosition() {
@@ -49,7 +52,7 @@ namespace CardFramework {
 
         private void SmoothToTargetPositionRotation() {
             if (TargetTransform.position != transform.position || TargetTransform.eulerAngles != transform.eulerAngles) {
-                SmoothToPointAndDirection(TargetTransform.position, _positionDamp, TargetTransform.rotation, _rotationDamp);
+                SmoothToPointAndDirection(TargetTransform.position, _positionDamp, TargetTransform.rotation);
             }
         }
 
@@ -58,20 +61,26 @@ namespace CardFramework {
             TargetTransform.rotation = rotation;
         }
 
-        private void SmoothToPointAndDirection(Vector3 point, float moveSmooth, Quaternion rotation, float rotSmooth) {
+        public void SetRotation (Quaternion rotation) {
+            previousRotation = TargetTransform.rotation;
+            TargetTransform.rotation = rotation;
+        }
+
+        public void ReturnToStartRotation() {
+            TargetTransform.rotation = previousRotation;
+        }
+
+        private void SmoothToPointAndDirection(Vector3 point, float moveSmooth, Quaternion rotation) {
             transform.position = Vector3.SmoothDamp(transform.position, point, ref _smoothVelocity, moveSmooth);
-            if (Vector3.Distance(transform.position, point) < 0.01f) {
+            if (Vector3.Distance(transform.position, point) < 0.005f) {
                 transform.position = point;
             }
-
-            Quaternion newRotation;
-            newRotation.x = Mathf.SmoothDamp(transform.rotation.x, rotation.x, ref _smoothRotationVelocity.x, rotSmooth);
-            newRotation.y = Mathf.SmoothDamp(transform.rotation.y, rotation.y, ref _smoothRotationVelocity.y, rotSmooth);
-            newRotation.z = Mathf.SmoothDamp(transform.rotation.z, rotation.z, ref _smoothRotationVelocity.z, rotSmooth);
-            newRotation.w = Mathf.SmoothDamp(transform.rotation.w, rotation.w, ref _smoothRotationVelocity.w, rotSmooth);
-            transform.rotation = newRotation;
+            float diff = Quaternion.Angle(transform.rotation, rotation);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation,
+                Mathf.Lerp(0, Mathf.Max(diff, 0.1f), 0.1f));
             TestVisibility();
         }
+
         private Vector3 _smoothVelocity;
         private Vector4 _smoothRotationVelocity;
 

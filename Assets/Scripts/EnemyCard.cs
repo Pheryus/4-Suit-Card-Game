@@ -11,11 +11,22 @@ namespace Pheryus {
 
         public int strength;
 
-        public Card enemyCard;
+        public int remainingShields;
+
+        public CardFramework.Card enemyCard;
 
         public LayerMask collisionMask;
 
         public Vector3 offset;
+
+        public List<CardFramework.Card> playerCards;
+
+
+        public int damageTook;
+
+        private void Start() {
+            playerCards = new List<CardFramework.Card>();
+        }
 
 
         public void OnDrop() {
@@ -25,20 +36,46 @@ namespace Pheryus {
             DraggableCard dc = go.GetComponent<DraggableCard>();
 
             if (c != null && (c.IsSpades || c.IsClub) && dc.isDragging){
-                PutPlayerCardBelowEnemy(go, c);
-                dc.correctPosition = true;
-                dc.enabled = false;
-            
+
+                if (Tutorial.instance.CanPlayCard(this)) {
+                    PutPlayerCardBelowEnemy(go, c);
+                    dc.correctPosition = true;
+                    dc.enabled = false;
+                    dc.ResetBoxCollider();
+                    Tutorial.instance.DropCard(this, canKillEnemy: WillDie());
+                    DraggableCard.draggableGO = null;
+                }
             }
             else if (c != null && c.IsDiamonds && dc.isDragging) {
                 if ((int)c.cardInfo.rank + 1 >= enemyCard.cardInfo.power) {
                     dc.correctPosition = true;
                     dc.enabled = false;
                     dc.isLost = true;
+                    dc.ResetBoxCollider();
                     GiveMoneyToCard(go, c);
+                    DraggableCard.draggableGO = null;
                 }
-            
+
             }
+        }
+
+        public void ResetPlayerCards() {
+            playerCards = new List<CardFramework.Card>();
+        }
+
+        public bool IsDead() {
+            return enemyCard.cardInfo.rank < 0;
+        }
+
+        public void ReduceHp(int strength) {
+            enemyCard.cardInfo.rank -= strength;
+            if (!IsDead()) {
+                enemyCard.FrontBecameVisible();
+            }
+        }
+
+        public bool WillDie() {
+            return strength >= (int)enemyCard.cardInfo.rank + 1;
         }
 
         void GiveMoneyToCard (GameObject go, Card card) {
@@ -70,17 +107,10 @@ namespace Pheryus {
                 
                 attachedCards++;
                 strength += (int)card.cardInfo.rank + 1;
+                playerCards.Add((CardFramework.Card)card);
 
 
             }
-        }
-
-        public bool IsAlive() {
-            if (strength >= (int)enemyCard.cardInfo.rank + 1) {
-                DungeonManager.instance.DestroyCard(enemyCard);
-                return false;
-            }
-            return true;
         }
 
         private void Update() {
@@ -91,7 +121,6 @@ namespace Pheryus {
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, collisionMask) && hit.transform == transform && Input.GetMouseButtonUp(0)) {
                 if (DraggableCard.draggableGO != null) {
                     OnDrop();
-                    Debug.Log("dropou carta certa");
                 }
             }
         }

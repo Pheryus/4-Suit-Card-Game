@@ -14,9 +14,6 @@ public class CardSlot : MonoBehaviour
 	[SerializeField]
 	private float _positionDamp = .2f;
 
-	[Range(0.05f, 0.3f)]
-	[SerializeField] 
-	private float _rotationDamp = .2f;   
 	
 	private void Awake()
 	{
@@ -75,7 +72,7 @@ public class CardSlot : MonoBehaviour
 			{
 				card.TargetTransform.Translate(new Vector3(0, 0, CardList.Count * (float)cardHeight), Space.Self);
 			}
-			card.SetDamp(_positionDamp, _rotationDamp);
+			card.SetDamp(_positionDamp);
 			return true;
 		}
 		else

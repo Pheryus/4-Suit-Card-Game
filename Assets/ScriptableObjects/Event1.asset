@@ -13,36 +13,91 @@ MonoBehaviour:
   m_Name: Event1
   m_EditorClassIdentifier: 
   options:
-  - cards:
-    - rank: 1
-      suit: 0
-      card: {fileID: 0}
-      singleUse: 0
+  - wave:
+      cards:
+      - rank: 0
+        suit: 0
+        card: {fileID: 0}
+        shieldValue: 0
+        singleUse: 0
+        power: 0
+    option: 0
     cost: 1
-  - cards:
-    - rank: 0
-      suit: 1
-      card: {fileID: 0}
-      singleUse: 0
-    - rank: 2
-      suit: 2
-      card: {fileID: 0}
-      singleUse: 0
-    - rank: 3
-      suit: 3
-      card: {fileID: 0}
-      singleUse: 0
+    qty: 0
+  - wave:
+      cards:
+      - rank: 1
+        suit: 2
+        card: {fileID: 0}
+        shieldValue: 0
+        singleUse: 0
+        power: 0
+      - rank: 1
+        suit: 2
+        card: {fileID: 0}
+        shieldValue: 0
+        singleUse: 0
+        power: 0
+      - rank: 0
+        suit: 2
+        card: {fileID: 0}
+        shieldValue: 0
+        singleUse: 0
+        power: 0
+    option: 0
+    cost: 3
+    qty: 0
+  - wave:
+      cards:
+      - rank: 0
+        suit: 1
+        card: {fileID: 0}
+        shieldValue: 0
+        singleUse: 0
+        power: 0
+    option: 0
     cost: 2
-  - cards:
-    - rank: 6
-      suit: 2
-      card: {fileID: 0}
-      singleUse: 1
-    cost: 2
-  - cards:
-    - rank: 2
-      suit: 0
-      card: {fileID: 0}
-      singleUse: 0
-    cost: 2
-  level: 0
+    qty: 0
+  - wave:
+      cards:
+      - rank: 0
+        suit: 2
+        card: {fileID: 0}
+        shieldValue: 0
+        singleUse: 0
+        power: 0
+    option: 0
+    cost: 1
+    qty: 0
+  - wave:
+      cards: []
+    option: 1
+    cost: 0
+    qty: 2
+  - wave:
+      cards: []
+    option: 2
+    cost: 0
+    qty: 3
+  - wave:
+      cards:
+      - rank: 7
+        suit: 2
+        card: {fileID: 0}
+        shieldValue: 0
+        singleUse: 0
+        power: 0
+    option: 0
+    cost: 4
+    qty: 1
+  - wave:
+      cards:
+      - rank: 0
+        suit: 0
+        card: {fileID: 0}
+        shieldValue: 0
+        singleUse: 0
+        power: 0
+    option: 0
+    cost: 0
+    qty: 0

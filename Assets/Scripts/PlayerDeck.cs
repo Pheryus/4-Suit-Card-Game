@@ -37,14 +37,30 @@ namespace Pheryus {
         [SerializeField]
         private CardDeck _cardDeck;
 
-        private IEnumerator Start() {
+        public int totalCardsInHand = 0;
+
+
+        public Tutorial tutorial;
+
+        private void Start() {
             instance = this;
             SetupCardManager();
-            CreateDeck();
-            ShuffleDeck();
+
+            if (tutorial.active) {
+                tutorial.CreateTutorialDeck();
+            }
+            else {
+                CreateDeck();
+                ShuffleDeck();
+            }
             InstantiateDeck();
             
-            yield return StartCoroutine(DrawCards());
+            if (!tutorial.active) {
+                StartCoroutine(DrawUpToXCards(5));
+            }
+            else {
+                StartCoroutine(DrawUpToXCards(1));
+            }
         }
 
         void SetupCardManager() {
@@ -55,9 +71,9 @@ namespace Pheryus {
         }
 
 
-        IEnumerator DrawCards() {
+        public IEnumerator DrawUpToXCards(int qty) {
             yield return new WaitForSeconds(0.3f);
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < qty; i++) {
                 if (hand[i] == null || hand[i].card == null) {
                     CardInfo drawCard = DrawCard();
                     if (drawCard == null) {
@@ -71,6 +87,7 @@ namespace Pheryus {
                     }
                     hand[i] = drawCard;
                     hand[i].card = drawCard.card;
+                    totalCardsInHand++;
                     yield return StartCoroutine(DrawCardCoroutine(drawCard, i));
                 }
             }
@@ -111,13 +128,19 @@ namespace Pheryus {
 
         void CreateDeck() {
             foreach (DeckInfo di in starterDeck) {
-
                 for (int i = 0; i < di.qtd; i++) {
                     CardInfo card = new CardInfo(di.rank, di.suit);
                     playerDeck.Add(card);
                 }
             }
+        }
 
+        public void HideHand(bool hide) {
+            foreach (CardInfo ci in hand) {
+                if (ci != null && ci.card != null) {
+                    ci.card.gameObject.SetActive(hide);
+                }
+            }
         }
 
         void InstantiateDeck() {
@@ -142,6 +165,8 @@ namespace Pheryus {
 
         public void DiscardCardFromHand (int position) {
             hand[position] = new CardInfo(Rank.ace, Suit.clubs);
+            totalCardsInHand--;
+            UpdateHand();
         }
 
 
@@ -151,49 +176,59 @@ namespace Pheryus {
             UpdateHand();
         }
 
+
         public void LoseCard(Card card) {
-            //card.transform.SetParent(lostTransform);
-            //card.flipUp = true;
-            //card.transform.localPosition = Vector3.zero;
             _dealer.MoveCardToLoseSlot(card.GetComponent<CardFramework.Card>());
             lostPile.Add(card);
         }
 
         public void LoseCardFromHand(Card card) {
+            totalCardsInHand--;
             hand[card.position] = new CardInfo(Rank.ace, Suit.clubs);
             LoseCard(card);
         }
 
-        void UpdateHand() {
+        public void UpdateHand() {
+            if (tutorial.active) {
+                //return;
+            }
             for (int i = 0; i < 4; i++) {
-                if (hand[i].card == null) {
+                if (hand[i] != null && hand[i].card == null) {
                     int index = GetIndexFromNextCard(i+1);
                     if (index != -1) {
                         hand[i] = new CardInfo(hand[index].rank, hand[index].suit);
                         hand[i].card = hand[index].card;
                         hand[index].card = null;
                         hand[i].card.position = i;
+
                         StartCoroutine(_dealer.MoveCardInHand(hand[i].card, i));
                     }
                 }
-                /*
-                if (hand[i].card != null) {
-                    //hand[i].card.transform.SetParent(handTransform.GetChild(i));
-                    hand[i].card.transform.localPosition = Vector3.zero;
-                }
-                */
+            }
+        }
+
+        public int GetCardPositionVisually(int position) {
+            if (totalCardsInHand == 1) {
+                return 2;
+            }
+            else if (totalCardsInHand == 2 || totalCardsInHand == 3) {
+                return position + 1;
+            }
+            else {
+                return position;
             }
         }
 
         public void PlayDiamondCard (Card card) {
             PlayerStatus.instance.gold += (int)card.cardInfo.rank + 1;
             PlayerAction.instance.Act(card);
+            totalCardsInHand--;
             DiscardCard(card.GetComponent<CardFramework.Card>());
         }
 
         int GetIndexFromNextCard(int id) {
             for (int i = id; i < 5; i++) {
-                if (hand[i].card != null) {
+                if (hand[i] != null && hand[i].card != null) {
                     return i;
                 }
             }
@@ -219,8 +254,10 @@ namespace Pheryus {
                 CardInfo cardInfo = playerDeck[0];
                 playerDeck.RemoveAt(0);
                 CardFramework.Card card = _dealer.GetTopCardFromDeck();
-                card.cardInfo = cardInfo;
-                LoseCard(card);
+                if (card != null && card.cardInfo != null) { 
+                    card.cardInfo = cardInfo;
+                    LoseCard(card);
+                }
             }
 
             if (die) {
@@ -243,6 +280,7 @@ namespace Pheryus {
         public void PlayHeartCard(Card card) {
             PlayerStatus.instance.life += (int)card.cardInfo.rank + 1;
             PlayerAction.instance.Act(card);
+            totalCardsInHand--;
             DiscardCard(card.GetComponent<CardFramework.Card>());
         }
 
@@ -270,7 +308,13 @@ namespace Pheryus {
         }
 
         public void StartNewTurn() {
-            StartCoroutine(DrawCards());
+            if (tutorial.active) {
+                tutorial.StartNewTurn();
+            }
+            else {
+                PlayerAction.instance.SetEndTurn(true);
+                StartCoroutine(DrawUpToXCards(5));
+            }
         }
 
         private void Update() {

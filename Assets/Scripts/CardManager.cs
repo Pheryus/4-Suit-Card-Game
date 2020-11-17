@@ -12,7 +12,7 @@ public class CardManager : MonoBehaviour {
 
     public Sprite flipDown;
 
-    public GameObject cardPrefab, enemyCardPrefab;
+    public GameObject cardPrefab, enemyCardPrefab, shieldPrefab;
 
 
     private void Awake() {

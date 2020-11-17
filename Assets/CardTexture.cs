@@ -12,23 +12,28 @@ public class CardTexture : MonoBehaviour {
         instance = this;
     }
 
-
     public Texture GetTextureFromCard (Pheryus.CardInfo cardInfo) {
+
         if (cardInfo == null) {
             Debug.LogError("cardInfo null");
             return null;
         }
+        int cardRank = (int)cardInfo.rank;
+        if (cardRank < 0) {
+            cardRank = 0;
+        }
+
         if (cardInfo.suit == Suit.clubs) {
-            return clubCards[(int)cardInfo.rank];
+            return clubCards[cardRank];
         }
         else if (cardInfo.suit == Suit.diamonds) {
-            return diamondCards[(int)cardInfo.rank];
+            return diamondCards[cardRank];
         }
         else if (cardInfo.suit == Suit.hearts) {
-            return heartCards[(int)cardInfo.rank];
+            return heartCards[cardRank];
         }
         else {
-            return spadeCards[(int)cardInfo.rank];
+            return spadeCards[cardRank];
         }
     }
 }

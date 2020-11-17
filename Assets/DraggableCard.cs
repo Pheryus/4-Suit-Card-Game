@@ -18,11 +18,18 @@ namespace Pheryus {
 
         public static GameObject draggableGO = null;
 
+        BoxCollider bc;
+
+        Vector3 startBcSize;
+
         void Start() {
-            ;
+            bc = GetComponent<BoxCollider>();
+            startBcSize = bc.size;
         }
 
         Vector3 startDragPosition;
+
+        float startYPos;
 
         public void OnBeginDrag(PointerEventData eventData) {
 
@@ -62,7 +69,23 @@ namespace Pheryus {
 
         bool excludingProcess = false;
 
+        bool willReturn = false;
+
         void Update() {
+
+            if (Tutorial.instance && Tutorial.instance.OnMessage()) {
+                return;
+            }
+
+            if (willReturn) {
+                card.returnToStartPosition = true;
+                card.ReturnToStartRotation();
+                ResetBoxCollider();
+                Tutorial.instance.ReleaseCard();
+                isDragging = false;
+                draggableGO = null;
+                willReturn = false;
+            }
 
             if (excludingProcess) {
                 isDragging = false;
@@ -72,35 +95,46 @@ namespace Pheryus {
 
             RaycastHit hit;
 
-            Vector3 newOffset = Vector3.zero;
+            PlayerInput input = PlayerInput.instance;
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = input.inputRay;
 
             if (Physics.Raycast(ray, out hit)) {
 
-                if (!isDragging && hit.transform == transform && card.OnTargetPosition()) {
-                    newOffset = offset;
-                    card.returnToStartPosition = false;
-                }
-
-                if (Input.GetMouseButtonDown(0) && hit.transform == transform && PlayerAction.instance.CanAct(card)) {
+                if (input.tapScreen && hit.transform == transform && PlayerAction.instance.CanAct(card)) {
                     isDragging = true;
                     draggableGO = gameObject;
+                    startYPos = transform.position.y;
+                    bc.size = startBcSize * 3;
+                    card.SetRotation(Quaternion.Euler(64, 8.616f, 3.693f));
                 }
             }
 
-            if (Input.GetMouseButtonUp(0)) {
-                card.returnToStartPosition = true;
+            if (input.releaseFinger && draggableGO == gameObject) {
+                willReturn = true;
             }
 
-            if (isDragging && Input.GetMouseButtonUp(0)) {
+            if (isDragging && input.releaseFinger) {
                 excludingProcess = true;
             }
 
             if (isDragging && hit.transform == transform) {
-                Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                transform.position = new Vector3(hit.point.x, hit.point.y + newOffset.y, hit.point.z);
-               
+                transform.position = new Vector3(hit.point.x, startYPos + offset.y, hit.point.z);
+                Tutorial.instance.DragCard();
+            }
+            else if (isDragging){
+                isDragging = false;
+                ResetBoxCollider();
+            }
+        }
+
+        private void OnEnable() {
+            ResetBoxCollider();
+        }
+
+        public void ResetBoxCollider() {
+            if (bc != null) { 
+                bc.size = startBcSize;
             }
         }
     }

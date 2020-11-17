@@ -40,35 +40,6 @@ namespace Pheryus {
             }
         }
 
-
-        public void UpdateSprite() {
-
-            if (CardManager.instance == null) {
-                Debug.LogError("Card Manager not found");
-                return;
-            }
-
-            /*
-            if (!flipUp) {
-                image.sprite = CardManager.instance.flipDown;
-                return;
-            }
-
-            if (cardInfo.suit == Suit.hearts) {
-                image.sprite = CardManager.instance.heartCards[(int)cardInfo.rank];
-            }
-            else if (cardInfo.suit == Suit.spades) {
-                image.sprite = CardManager.instance.spadeCards[(int)cardInfo.rank];
-            }
-            else if (cardInfo.suit == Suit.clubs) {
-                image.sprite = CardManager.instance.clubCards[(int)cardInfo.rank];
-            }
-            else if (cardInfo.suit == Suit.diamonds) {
-                image.sprite = CardManager.instance.diamondCards[(int)cardInfo.rank];
-            }
-            */
-        }
-
         public bool IsClub {
             get {
                 return cardInfo.suit == Suit.clubs;

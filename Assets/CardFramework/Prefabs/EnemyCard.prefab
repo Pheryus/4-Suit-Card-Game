@@ -208,11 +208,13 @@ MonoBehaviour:
     rank: 0
     suit: 0
     card: {fileID: 0}
+    hasShield: 0
     singleUse: 0
     power: 0
   draggableCard: {fileID: 0}
   position: 0
   image: {fileID: 0}
+  HasTarget: 1
   returnToStartPosition: 1
 --- !u!114 &1138808334626269867
 MonoBehaviour:
@@ -232,4 +234,6 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 256
-  offset: {x: 0, y: 0.01, z: -0.05}
+  offset: {x: 0, y: 0.005, z: -0.05}
+  playerCards: []
+  damageTook: 0

@@ -208,11 +208,13 @@ MonoBehaviour:
     rank: 0
     suit: 0
     card: {fileID: 0}
+    hasShield: 0
     singleUse: 0
     power: 0
   draggableCard: {fileID: 8981197636348999297}
   position: 0
   image: {fileID: 0}
+  HasTarget: 1
   returnToStartPosition: 1
 --- !u!114 &8981197636348999297
 MonoBehaviour:
@@ -231,4 +233,4 @@ MonoBehaviour:
   card: {fileID: 11463506}
   mouseOver: 0
   isDragging: 0
-  offset: {x: 0, y: 0, z: 0}
+  offset: {x: 0, y: 0.1, z: 0}

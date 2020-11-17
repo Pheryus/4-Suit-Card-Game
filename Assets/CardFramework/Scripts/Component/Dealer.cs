@@ -55,6 +55,8 @@ public class Dealer : MonoBehaviour
 
     public Transform cardParent;
 
+    public Transform cardSlots;
+
 	private const float CardStackDelay = .01f;
 	
 	/// <summary>
@@ -85,6 +87,10 @@ public class Dealer : MonoBehaviour
 		}
 	}
 
+    public void SetCardSlotActive (bool b) {
+        cardSlots.gameObject.SetActive(b);
+    }
+
     public void MoveCardToCardSlot(Card card, CardSlot targetCardSlot) {
         targetCardSlot.AddCard(card);
     }
@@ -103,6 +109,10 @@ public class Dealer : MonoBehaviour
 
     public void SetCardToPlayer (Card card) {
         card.transform.SetParent(cardParent);
+    }
+
+    public Vector3 GetDeckPosition() {
+        return _stackCardSlot.transform.position;
     }
 
     private IEnumerator StackCardRangeOnSlot(int start, int end, CardSlot cardSlot) 
@@ -124,7 +134,8 @@ public class Dealer : MonoBehaviour
     /// </summary>
     public IEnumerator ShuffleCoroutine()
 	{
-		DealInProgress++;
+        Pheryus.PlayerDeck.instance.HideHand(false);
+        DealInProgress++;
 		MoveCardSlotToCardSlot(_stackCardSlot, _pickupCardSlot);		
 		MoveCardSlotToCardSlot(_discardStackCardSlot, _pickupCardSlot);	
 		yield return new WaitForSeconds(.4f);	
@@ -158,6 +169,8 @@ public class Dealer : MonoBehaviour
             _stackCardSlot.AddCard(_shuffleStackCardSlot.TopCard());
         }
 		DealInProgress--;
+        yield return new WaitForSeconds(.3f);
+        Pheryus.PlayerDeck.instance.HideHand(true);
     }
 
     public IEnumerator MoveCardInHand(Pheryus.Card card, int position) {
@@ -188,34 +201,14 @@ public class Dealer : MonoBehaviour
 	public IEnumerator DrawCoroutine(Pheryus.CardInfo card, int position)
 	{
 		DealInProgress++;
-       
-        /*
-		if (_prior3CardSlot.AddCard(_prior4CardSlot.TopCard()))
-		{
-			yield return new WaitForSeconds(CardStackDelay);
-		}
-		if (_prior2CardSlot.AddCard(_prior3CardSlot.TopCard()))
-		{
-			yield return new WaitForSeconds(CardStackDelay);
-		}
-		if (_prior1CardSlot.AddCard(_prior2CardSlot.TopCard()))
-		{
-			yield return new WaitForSeconds(CardStackDelay);	
-		}
-
-        if (_prior0CardSlot.AddCard(_prior1CardSlot.TopCard())) {
-            yield return new WaitForSeconds(CardStackDelay);
-        }
-        */
-
+      
         card.card = _stackCardSlot.TopCard();
         card.card.position = position;
         _stackCardSlot.TopCard().cardInfo = card;
-        ((Card)(card.card)).returnToStartPosition = true;
-
+        ((Card)card.card).returnToStartPosition = true;
+        card.card.GetComponent<Pheryus.DraggableCard>().enabled = true;
 
         yield return StartCoroutine(MoveCardInHand(card.card, position));
-
 
         DealInProgress--;
 	}	

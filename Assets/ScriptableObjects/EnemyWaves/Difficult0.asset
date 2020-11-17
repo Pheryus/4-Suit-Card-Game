@@ -13,16 +13,15 @@ MonoBehaviour:
   m_Name: Difficult0
   m_EditorClassIdentifier: 
   option:
-  - cards:
-    - rank: 0
-      suit: 3
-      card: {fileID: 0}
-      singleUse: 0
+  - wave:
+      cards:
+      - rank: 0
+        suit: 3
+        card: {fileID: 0}
+        shieldValue: 2
+        singleUse: 0
+        power: 1
+    option: 0
     cost: 0
-  - cards:
-    - rank: 0
-      suit: 3
-      card: {fileID: 0}
-      singleUse: 0
-    cost: 0
+    qty: 0
   difficult: 0

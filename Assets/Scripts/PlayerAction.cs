@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Pheryus { 
     public class PlayerAction : MonoBehaviour {
@@ -16,6 +17,11 @@ namespace Pheryus {
         public PlayerDeck playerDeck;
 
         public GameObject commonDroppapleArea, lostArea;
+
+        public Image endTurnImage;
+        public Button endTurnButton;
+
+        bool canEndTurn = true;
 
         private void Awake() {
             instance = this;
@@ -45,10 +51,23 @@ namespace Pheryus {
             return card.cardInfo.suit == suitPlayed || suitPlayed == Suit.none;
         }
 
+        public void SetEndTurn(bool b) {
+            canEndTurn = b;
+            endTurnButton.enabled = b;
+            if (canEndTurn) {
+                endTurnImage.color = Color.white;
+            }
+            else {
+                endTurnImage.color = new Color(1, 1, 1, 0.5f);
+            }
+        }
+
         public void EndTurn() {
-            suitPlayed = Suit.none;
-            dungeonManager.EndRound();
-            playerDeck.StartNewTurn();
+            if (canEndTurn) { 
+                suitPlayed = Suit.none;
+                dungeonManager.EndRound();
+                SetEndTurn(false);
+            }
         }
     }
 }

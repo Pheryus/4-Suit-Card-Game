@@ -12,6 +12,7 @@ public class PlayerStatus : MonoBehaviour {
 
     private void Awake() {
         instance = this;
+        gold = 0;
     }
 
 
